@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahoj Vítek</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-auto-rows: min-content;
+            gap: 10px;
+            padding: 10px;
+            user-select: none;
+        }
+
+        .text {
+            font-size: 1.1rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        // Vygeneruje dostatečné množství textu pro zaplnění jakéhokoliv rozlišení
+        const body = document.body;
+        for (let i = 0; i < 500; i++) {
+            const div = document.createElement('div');
+            div.className = 'text';
+            div.textContent = 'Ahoj, Vítek 😀';
+            body.appendChild(div);
+        }
+    </script>
+
+</body>
+</html>

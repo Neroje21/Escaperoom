@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tajemství opuštěného majáku</title>
+    <style>
+        /* VINTAGE NAUTICAL / OLD JOURNAL THEME */
+        :root {
+            --bg-dark: #12100e;
+            --paper-bg: #e6d5b8;
+            --text-color: #2c1e16;
+            --accent: #7a2014; /* Dried blood red */
+            --accent-hover: #b03a2e;
+            --danger: #922b21;
+            --success: #1e8449;
+            --border-ink: #5a3c22;
+        }
+
+        body {
+            font-family: 'Georgia', 'Book Antiqua', Palatino, serif;
+            background-color: var(--bg-dark);
+            background-image: url('https://www.transparenttextures.com/patterns/stucco.png');
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Heavy Dark Vignette Overlay */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.95);
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* 3-Column Layout */
+        .layout {
+            display: grid;
+            grid-template-columns: 250px 1fr 250px;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Sidebars */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: 20px;
+            height: max-content;
+        }
+
+        .sidebar img {
+            width: 100%;
+            border-radius: 3px;
+            border: 4px solid #1a1a1a;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+            transition: all 0.4s ease;
+            filter: sepia(60%) contrast(110%) brightness(80%);
+        }
+
+        .sidebar img:hover {
+            transform: scale(1.03) rotate(-1deg);
+            border-color: var(--border-ink);
+            filter: sepia(20%) contrast(120%) brightness(100%);
+        }
+
+        /* Main Game Container - Old Paper Effect */
+        .game-core {
+            background-color: var(--paper-bg);
+            background-image: 
+                linear-gradient(to right, rgba(0,0,0,0.03) 0%, rgba(255,255,255,0) 10%, rgba(255,255,255,0) 90%, rgba(0,0,0,0.05) 100%),
+                url('https://www.transparenttextures.com/patterns/aged-paper.png');
+            padding: 50px;
+            border-radius: 2px;
+            border: 1px solid #a69176;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 60px rgba(139, 90, 43, 0.4);
+        }
+
+        h1, h2, h3 {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            font-weight: normal;
+            border-bottom: 2px double var(--border-ink);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 { font-size: 2.4em; }
+        h2 { font-size: 1.8em; }
+        
+        hr {
+            border: 0;
+            border-top: 1px solid var(--border-ink);
+            border-bottom: 1px solid var(--border-ink);
+            height: 3px;
+            margin: 40px 0;
+            opacity: 0.5;
+        }
+
+        /* Interactive Links (Ink style) */
+        a {
+            color: var(--accent);
+            text-decoration: underline;
+            text-decoration-style: dashed;
+            font-weight: bold;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        a::before {
+            content: '⚓';
+            margin-right: 8px;
+            opacity: 0;
+            font-size: 0.9em;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateX(-10px) rotate(-20deg);
+            display: inline-block;
+            color: var(--text-color);
+        }
+
+        a:hover {
+            color: var(--accent-hover);
+            background-color: rgba(122, 32, 20, 0.1);
+        }
+
+        a:hover::before {
+            opacity: 1;
+            transform: translateX(0) rotate(0deg);
+        }
+
+        ul, ol {
+            background: rgba(139, 90, 43, 0.1);
+            padding: 20px 20px 20px 50px;
+            border-left: 4px solid var(--border-ink);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        li { margin-bottom: 12px; }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid var(--border-ink);
+        }
+        th, td {
+            border: 1px solid var(--border-ink);
+            padding: 12px;
+            text-align: left;
+        }
+        th { 
+            background: rgba(139, 90, 43, 0.2);
+            color: var(--accent); 
+        }
+
+        /* Story Sections Animation */
+        .story-section {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.8s ease-in, transform 0.8s ease-out;
+        }
+        .story-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Target States */
+        #spatne-heslo, #vyhra {
+            display: none;
+            padding: 30px;
+            margin-top: 20px;
+            border: 2px dashed;
+        }
+        
+        #spatne-heslo:target {
+            display: block;
+            border-color: var(--danger);
+            background: rgba(146, 43, 33, 0.1);
+        }
+        
+        #vyhra:target {
+            display: block;
+            border-color: var(--success);
+            background: rgba(30, 132, 73, 0.1);
+        }
+
+        @media (max-width: 900px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { flex-direction: row; position: relative; top: 0; flex-wrap: wrap; }
+            .sidebar img { width: calc(50% - 10px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar left">
+        <img src="https://th.bing.com/th/id/R.8da0dc929707cfa13ed7417b196ab249?rik=z8OMZ2dmF628Zg&pid=ImgRaw&r=0" alt="Mysterious Woods">
+        <img src="https://media.tenor.com/NmEyjru3UZMAAAAM/bird-one-leg.gif" alt="Bird Gif">
+        <img src="https://i.pinimg.com/originals/24/d9/40/24d9401f0cb0aaf3141337fd7912cbf9.jpg" alt="Lighthouse in Storm">
+        <!-- NOVÝ OBRÁZEK: CHAIR GIF -->
+        <img src="https://media.tenor.com/3P0u5-MGECUAAAAM/chair-edit.gif" alt="Chair Edit Gif">
+    </div>
+
+    <!-- GAME CONTENT -->
+    <div class="game-core">
+        <div class="story-section visible" id="start">
+            <h1>Tajemství opuštěného majáku</h1>
+            <p>Během bouře jsi se schoval ve starém majáku na útesu. Dveře za tebou zapadly. Abys unikl, musíš prozkoumat maják a porozumět hypertextovým odkazům, které zde zanechal strážce.</p>
+            <p><b>Tvůj stav:</b> Stojíš v přízemí. Zdi jsou vlhké a voní solí.</p>
+            <ul>
+                <li><a href="#vstupni-hala">Prozkoumat přízemí</a></li>
+                <li><a href="#inventar">Zkontrolovat kapsy (Inventář)</a></li>
+            </ul>
+        </div>
+
+        <hr>
+
+        <div class="story-section" id="vstupni-hala">
+            <h2>I. Přízemí majáku</h2>
+            <p>V přízemí je tma. Na stěně visí stará mapa útesů a vedle ní je úzké schodiště nahoru. Pod schody vidíš starou, rzí prožranou skříňku.</p>
+            <p><b>Co uděláš?</b></p>
+            <ul>
+                <li><a href="#skrinka">Otevřít starou skříňku pod schody</a></li>
+                <li><a href="#schodiste">Vystoupat po schodech do patra</a></li>
+                <li><a href="#mapa-dole">Podívat se detailně na mapu</a></li>
+            </ul>
+            
+            <div id="skrinka" style="margin-top:20px; display:none;">
+                <p><i>[Skříňka]: Panty zaskřípaly. Uvnitř jsi našel starý klíč a rozmočený lístek s textem: "První číslo kódu je 7".</i></p>
+                <a href="#inventar-klic">Sebrat klíč do inventáře</a> | <a href="#vstupni-hala">Zavřít skříňku</a>
+            </div>
+
+            <div id="mapa-dole" style="margin-top:20px; display:none;">
+                <p><i>[Mapa]: Na mapě je perem vyznačená poloha majáku na souřadnicích GPS.</i></p>
+                <a href="https://www.google.com/maps" target="_blank">Otevřít GPS mapu v nové kartě</a><br>
+                <a href="#vstupni-hala">Odstoupit od mapy</a>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="story-section" id="schodiste">
+            <h2>II. Schodiště a věžní chodba</h2>
+            <p>Jsi na dlouhém točitém schodišti. Dřevo pod tvýma nohama zlověstně vrže. Musíš projít dlouhou chodbou nahoru k pracovně strážce.</p>
+            <p><a href="#pracovna">Přeběhnout chodbu přímo do pracovny</a></p>
+            
+            <div style="text-align: center; margin: 40px 0; color: #5a3c22; font-style: italic;">
+                ...Stoupáš po schodech...<br>
+                ...Vítr venku kvílí...
+            </div>
+        </div>
+
+        <div class="story-section" id="pracovna">
+            <h2>III. Pracovna strážce</h2>
+            <p>Jsi v pracovně. Na masivním dubovém stole leží rozepsaný deník, rozbitá vysílačka a zaprášený telegraf.</p>
+            <p><b>Možné akce v pracovně:</b></p>
+            <ul>
+                <li>
+                    <a href="https://vesmirni-lide.cz/default_cz.htm" target="_blank">Prozkoumat zprávu od strážce na podivném webu</a> 
+                    <br><i style="color: #664d36; font-size: 0.9em;">(Na stránce najdeš druhé číslo kódu: 3)</i>
+                </li>
+                <li>
+                    <a href="https://www.youtube.com/channel/UCRQZXAXslJnvTEP87ODOPiQ" target="_blank">Pustit starou pásku s instruktážním videem</a> 
+                    <br><i style="color: #664d36; font-size: 0.9em;">(Ve videu se dozvíš třetí číslo kódu: 1)</i>
+                </li>
+                <li>
+                    <a href="napoveda.html" target="_blank">Přečíst šifrovanou nápovědu z telegrafu</a>
+                    <br><i style="color: #664d36; font-size: 0.9em;">(Poslední číslo)</i>
+                </li>
+            </ul>
+            <p><a href="#dvere-vychod">Jít k únikovému východu z majáku</a></p>
+            <p><a href="#vstupni-hala">Sejít po schodech zpět do přízemí</a></p>
+        </div>
+
+        <hr>
+
+        <div class="story-section" id="dvere-vychod">
+            <h2>IV. Únikový východ</h2>
+            <p>Stojíš u těžkých železných dveří ven z majáku. Kolem kliky je namotaný těžký řetěz zakončený číselným zámkem na 4 číslice.</p>
+            <p>Zadej kombinaci hesel stisknutím správného odkazu:</p>
+            <ul>
+                <li><a href="#spatne-heslo">Zkusit kód: 1 - 2 - 3 - 4</a></li>
+                <li><a href="#spatne-heslo">Zkusit kód: 7 - 1 - 3 - 5</a></li>
+                <li><a href="#vyhra">Zkusit kód: 7 - 3 - 1 - 5 (Správná kombinace)</a></li>
+                <li><a href="#spatne-heslo">Zkusit kód: 5 - 3 - 1 - 7</a></li>
+            </ul>
+        </div>
+
+        <!-- Result Screens triggered by CSS :target -->
+        <div id="spatne-heslo">
+            <h3 style="color: var(--danger); border-bottom: none;">[X] ŠPATNÝ KÓD!</h3>
+            <p>Zámek zlověstně cvakl, ale nepovolil. Venku uhodil blesk.</p>
+            <p><a href="#dvere-vychod">Zkusit to znovu</a></p>
+        </div>
+
+        <div id="vyhra">
+            <h2 style="color: var(--success); border-bottom: none;">ZÁCHRANA! UNIKL JSI!</h2>
+            <p>Těžký mechanismus povolil. Otevřel jsi dveře a do tváře tě udeřil studený noční vzduch. Jsi volný.</p>
+            <h3 style="margin-top: 30px; font-size: 1.2em;">Záznam lodního deníku (HTML struktura):</h3>
+            <table>
+                <tr>
+                    <th>Kód odkazu</th>
+                    <th>Funkce ve hře</th>
+                </tr>
+                <tr>
+                    <td><code>&lt;a href="#id"&gt;</code></td>
+                    <td>Přechod mezi místnostmi a posun po stránce (kotva).</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;a href="https://..." target="_blank"&gt;</code></td>
+                    <td>Otevření externích webových stránek.</td>
+                </tr>
+                <tr>
+                    <td><code>&lt;a href="napoveda.html"&gt;</code></td>
+                    <td>Relativní odkaz na lokální stránku.</td>
+                </tr>
+            </table>
+            <br>
+            <p><a href="#start">Začít noční můru od začátku</a></p>
+        </div>
+
+        <hr>
+
+        <div class="story-section" id="inventar">
+            <h2>Inventář</h2>
+            <p>Zde je seznam věcí, které máš po kapsách:</p>
+            <ul>
+                <li>Mosazná baterka (slabé světlo)</li>
+                <li id="inventar-klic" style="opacity: 0.5;">Klíč od skříňky (Zatím nenalezen)</li>
+            </ul>
+            <p><a href="#vstupni-hala">Vrátit se zpět do tmy</a></p>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="sidebar right">
+        <img src="https://tse4.mm.bing.net/th/id/OIP.r7QYe4G-T31ixCom0r0qewAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Dark Ocean">
+        <img src="https://media.tenor.com/d9-oc__al-QAAAAM/subway-surfers.gif" alt="Subway Surfers Gameplay">
+        <img src="https://i.makeagif.com/media/8-18-2026/D09Ge8.gif" alt="New Meme Gif">
+        <!-- NOVÝ OBRÁZEK: DARK HALLWAY -->
+        <img src="https://tse3.mm.bing.net/th/id/OIP.tZo6Aq5n8shvuqARXeKIDgAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="Dark Creepy Hallway">
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Smooth Scrolling for Anchor Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+                
+                if(targetId !== '#spatne-heslo' && targetId !== '#vyhra' && targetId !== '#skrinka' && targetId !== '#mapa-dole' && targetId !== '#inventar-klic') {
+                    e.preventDefault();
+                    document.querySelector(targetId).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+                
+                // Element Reveals
+                if(targetId === '#skrinka') {
+                    e.preventDefault();
+                    document.getElementById('skrinka').style.display = 'block';
+                }
+                if(targetId === '#mapa-dole') {
+                    e.preventDefault();
+                    document.getElementById('mapa-dole').style.display = 'block';
+                }
+                if(targetId === '#inventar-klic') {
+                    e.preventDefault();
+                    const invKey = document.getElementById('inventar-klic');
+                    invKey.style.opacity = '1';
+                    invKey.innerHTML = '<strong>Klíč od skříňky (Získán!)</strong>';
+                    invKey.style.color = '#7a2014';
+                    alert("Rezavý klíč byl přidán do inventáře!");
+                }
+            });
+        });
+
+        // Fade-in animation on scroll
+        const sections = document.querySelectorAll('.story-section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    });
+</script>
+
+</body>
+</html>
